@@ -6,7 +6,7 @@ import cs from './App.module.css';
 
 export default class App extends Component {
   static propTypes = {
-    me: PropTypes.object.isRequired,
+    user: PropTypes.object.isRequired,
     friends: PropTypes.array.isRequired,
     portraitSize: PropTypes.number
   };
@@ -19,7 +19,7 @@ export default class App extends Component {
     innerHeight: undefined,
     innerWidth: undefined,
     offsetWidth: undefined,
-    meOrigin: undefined,
+    userOrigin: undefined,
     scrollHeight: undefined
   };
 
@@ -43,7 +43,7 @@ export default class App extends Component {
     const {offsetWidth} = this.rootNode;
 
     this.setState({
-      meOrigin: {
+      userOrigin: {
         left: offsetWidth / 2,
         bottom: 40 + portraitSize / 2
       },
@@ -54,9 +54,9 @@ export default class App extends Component {
   }
 
   render() {
-    const {friends, me, portraitSize} = this.props;
-    const {meOrigin, innerHeight, innerWidth, offsetWidth} = this.state;
-    const hasMeasured = meOrigin !== undefined;
+    const {friends, user, portraitSize} = this.props;
+    const {userOrigin, innerHeight, innerWidth, offsetWidth} = this.state;
+    const hasMeasured = userOrigin !== undefined;
 
     return (
       <div
@@ -68,19 +68,19 @@ export default class App extends Component {
           <Friends
             friends={friends}
             key="friends"
-            meOrigin={meOrigin}
             offsetHeight={innerHeight}
             offsetWidth={offsetWidth}
             portraitSize={portraitSize}
+            userOrigin={userOrigin}
           />,
 
           <Person
-            {...me}
-            className={cs.me}
-            key="me"
+            {...user}
+            className={cs.user}
+            key="user"
             size={portraitSize}
             style={{
-              bottom: meOrigin.bottom - portraitSize / 2,
+              bottom: userOrigin.bottom - portraitSize / 2,
               left: (innerWidth - portraitSize) / 2
             }}
           />

@@ -12,7 +12,7 @@ const friendImages = [
 ];
 
 export default {
-  me: {
+  user: {
     portrait: require('./faces/image-1.png')
   },
 

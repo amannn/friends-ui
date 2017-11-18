@@ -8,7 +8,7 @@ import cs from './Friends.module.css';
 
 export default class Friends extends Component {
   static propTypes = {
-    meOrigin: PropTypes.object.isRequired,
+    userOrigin: PropTypes.object.isRequired,
     friends: PropTypes.array.isRequired,
     offsetY: PropTypes.number,
     offsetWidth: PropTypes.number,
@@ -74,12 +74,12 @@ export default class Friends extends Component {
   };
 
   onUpdateLines = ({value: scrollTop}) => {
-    const {meOrigin, portraitSize, offsetHeight} = this.props;
+    const {userOrigin, portraitSize, offsetHeight} = this.props;
     const {friendsOrigins} = this.state;
 
-    const positionedMeOrigin = {
-      left: meOrigin.left,
-      top: scrollTop + offsetHeight - meOrigin.bottom
+    const positionedUserOrigin = {
+      left: userOrigin.left,
+      top: scrollTop + offsetHeight - userOrigin.bottom
     };
 
     const visibleFriendsOrigins = friendsOrigins.map(friendOrigin => {
@@ -96,13 +96,15 @@ export default class Friends extends Component {
         return;
       }
 
-      const dx = Math.abs(friendOrigin.left - positionedMeOrigin.left);
-      const dy = Math.abs(friendOrigin.top - positionedMeOrigin.top);
+      const dx = Math.abs(friendOrigin.left - positionedUserOrigin.left);
+      const dy = Math.abs(friendOrigin.top - positionedUserOrigin.top);
       const d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
       let degrees = NumberUtils.radiantToDegress(Math.atan(dy / dx));
-      if (friendOrigin.top < positionedMeOrigin.top) degrees *= -1;
-      if (friendOrigin.left < positionedMeOrigin.left) degrees = 180 - degrees;
+      if (friendOrigin.top < positionedUserOrigin.top) degrees *= -1;
+      if (friendOrigin.left < positionedUserOrigin.left) {
+        degrees = 180 - degrees;
+      }
 
       node.style.transform = `rotate(${degrees}deg) scaleX(${d})`;
       node.style.opacity = 1;
@@ -110,14 +112,14 @@ export default class Friends extends Component {
   };
 
   interpolateFriendOpacity(friendOrigin) {
-    const {meOrigin, offsetHeight, portraitSize} = this.props;
+    const {userOrigin, offsetHeight, portraitSize} = this.props;
     const {scrollTop, scrollHeight} = this.state;
     if (!scrollHeight) return 0;
 
     return scrollTop.interpolate({
       inputRange: [
         friendOrigin.top - offsetHeight,
-        friendOrigin.top - offsetHeight + meOrigin.bottom + portraitSize / 2
+        friendOrigin.top - offsetHeight + userOrigin.bottom + portraitSize / 2
       ],
       outputRange: [0, 1],
       extrapolate: 'clamp'
@@ -125,26 +127,26 @@ export default class Friends extends Component {
   }
 
   interpolateFriendTransform(friendOrigin) {
-    const {meOrigin, offsetHeight, portraitSize} = this.props;
+    const {userOrigin, offsetHeight, portraitSize} = this.props;
     const {scrollTop, scrollHeight} = this.state;
     if (!scrollHeight) return 0;
 
     const minOriginD = portraitSize + 20;
-    const baseOriginsD = Math.abs(meOrigin.left - friendOrigin.left);
-    const isRight = friendOrigin.left > meOrigin.left;
+    const baseOriginsD = Math.abs(userOrigin.left - friendOrigin.left);
+    const isRight = friendOrigin.left > userOrigin.left;
     const maxTranslation = minOriginD - baseOriginsD;
-    const meOriginTop = friendOrigin.top - offsetHeight + meOrigin.bottom;
+    const userOriginTop = friendOrigin.top - offsetHeight + userOrigin.bottom;
 
-    // The friend is too far away from the me, so no translation is necessary.
+    // The friend is too far away from the user, so no translation is necessary.
     if (maxTranslation <= 0) return [];
 
     return [
       {
         translateX: scrollTop.interpolate({
           inputRange: [
-            meOriginTop - minOriginD,
-            meOriginTop,
-            meOriginTop + minOriginD
+            userOriginTop - minOriginD,
+            userOriginTop,
+            userOriginTop + minOriginD
           ],
           outputRange: [0, isRight ? maxTranslation : -maxTranslation, 0],
           easing: Easing.inOut(Easing.quad),
