@@ -1,0 +1,11 @@
+.root {
+  position: relative;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  max-width: 450px;
+  margin: auto;
+}
+
+.me {
+  position: fixed;
+}

@@ -1,0 +1,27 @@
+.friend {
+  position: absolute;
+  will-change: transform;
+}
+
+/* Some space beelow the last friend so it's placed above the me. */
+.friend:last-child::after {
+  content: "";
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 1px;
+  height: 230px;
+  pointer-events: none;
+}
+
+.line {
+  position: fixed;
+  width: 1px;
+  height: 1px;
+  background-color: rgba(255, 255, 255, 0.075);
+  will-change: transform;
+  transform-origin: top left;
+  left: 50%;
+  bottom: 77px;
+  z-index: -1;
+}
