@@ -2,13 +2,13 @@ import React, {Component} from 'react';
 import PropTypes from 'prop-types';
 import cx from 'classnames';
 import Friends from './Friends';
-import CommonFriends from './CommonFriends';
+import Mutuals from './Mutuals';
 import Person from './Person';
 import cs from './App.module.css';
 
 export default class App extends Component {
   static propTypes = {
-    commonFriends: PropTypes.array.isRequired,
+    mutuals: PropTypes.array.isRequired,
     friends: PropTypes.array.isRequired,
     portraitSize: PropTypes.number,
     user: PropTypes.object.isRequired
@@ -60,7 +60,7 @@ export default class App extends Component {
   }
 
   render() {
-    const {friends, commonFriends, user, portraitSize} = this.props;
+    const {friends, mutuals, user, portraitSize} = this.props;
     const {
       innerHeight,
       innerWidth,
@@ -94,10 +94,10 @@ export default class App extends Component {
             userPosition={userPosition}
           />,
 
-          <CommonFriends
-            commonFriends={commonFriends}
+          <Mutuals
             friend={enhancedSelectedFriend}
-            key="commonFriends"
+            key="mutuals"
+            mutuals={mutuals}
             offsetHeight={innerHeight}
             offsetWidth={offsetWidth}
             portraitSize={portraitSize}

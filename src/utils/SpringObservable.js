@@ -1,5 +1,5 @@
 import {Observable} from 'rxjs';
-import {Spring as WobbleSpring} from 'wobble/dist/wobble.es';
+import {Spring as WobbleSpring} from 'wobble/dist/wobble.cjs';
 
 export const Spring = WobbleSpring;
 

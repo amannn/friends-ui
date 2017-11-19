@@ -23,7 +23,7 @@ export default {
       portrait: friendImages[i % friendImages.length]
     })),
 
-  commonFriends: Array(50)
+  mutuals: Array(50)
     .fill(null)
     .map((_, i) => ({
       id: i,

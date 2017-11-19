@@ -12,7 +12,7 @@
   left: 0;
 }
 
-.commonFriends {
+.mutuals {
   position: fixed;
   top: 0;
   left: 0;
@@ -21,7 +21,7 @@
   -webkit-overflow-scrolling: touch;
 }
 
-.commonFriend {
+.mutual {
   position: absolute;
 }
 

@@ -5,12 +5,12 @@ import cx from 'classnames';
 import MathUtils from '../utils/MathUtils';
 import {createSpringObservable, Spring} from '../utils/SpringObservable';
 import Person from './Person';
-import cs from './CommonFriends.module.css';
+import cs from './Mutuals.module.css';
 
-export default class CommonFriends extends Component {
+export default class Mutuals extends Component {
   static propTypes = {
     centerOffset: PropTypes.number,
-    commonFriends: PropTypes.array.isRequired,
+    mutuals: PropTypes.array.isRequired,
     friend: PropTypes.object,
     offsetHeight: PropTypes.number.isRequired,
     offsetWidth: PropTypes.number.isRequired,
@@ -32,7 +32,7 @@ export default class CommonFriends extends Component {
   onAnimateIn() {
     const {
       centerOffset,
-      commonFriends,
+      mutuals,
       portraitSize,
       offsetHeight,
       offsetX
@@ -43,7 +43,7 @@ export default class CommonFriends extends Component {
     });
     const {scrollTop} = this.rootNode.parentNode;
 
-    const commonFriendsBaseOrigin = commonFriends.map((friend, i) => {
+    const mutualsBaseOrigins = mutuals.map((friend, i) => {
       const y =
         i % 2 === 0
           ? offsetHeight / 2 - centerOffset
@@ -62,8 +62,8 @@ export default class CommonFriends extends Component {
       this.onUpdateFriend(this.friendNode, origin)
     );
 
-    commonFriendsBaseOrigin.forEach((baseOrigin, i) => {
-      const node = this.commonFriendNodes[i];
+    mutualsBaseOrigins.forEach((baseOrigin, i) => {
+      const node = this.mutualsNodes[i];
 
       Rx.Observable
         .of(baseOrigin)
@@ -73,11 +73,11 @@ export default class CommonFriends extends Component {
         )
         .combineLatest(friendOrigin$)
         .withLatestFrom(spring$)
-        .subscribe(([[commonFriendOrigin, friendOrigin], springValue]) => {
-          this.onUpdateCommonFriend(node, commonFriendOrigin, springValue);
+        .subscribe(([[mutualOrigin, friendOrigin], springValue]) => {
+          this.onUpdateMutual(node, mutualOrigin, springValue);
           // this.onUpdateTopLine(
           //   this.topLineNodes[i],
-          //   commonFriendOrigin,
+          //   mutualOrigin,
           //   friendOrigin,
           //   springValue
           // );
@@ -99,33 +99,33 @@ export default class CommonFriends extends Component {
     this.topLineNodes = node.children;
   };
 
-  onCommonFriendsRef = node => {
-    this.commonFriendNodes = node.children;
+  onMutualsRef = node => {
+    this.mutualsNodes = node.children;
   };
 
-  onUpdateTopLine = (node, commonFriendOrigin, friendOrigin, springValue) => {
+  onUpdateTopLine = (node, mutualOrigin, friendOrigin, springValue) => {
     // const {offsetHeight, portraitSize} = this.props;
     // const isOutOfViewport =
-    //   friendOrigin.y - commonFriendOrigin.y > offsetHeight - portraitSize / 2 ||
-    //   commonFriendOrigin.y - friendOrigin.y > userPosition.bottom + portraitSize;
+    //   friendOrigin.y - mutualOrigin.y > offsetHeight - portraitSize / 2 ||
+    //   mutualOrigin.y - friendOrigin.y > userPosition.bottom + portraitSize;
     //
     // if (isOutOfViewport) {
     //   node.style.opacity = 0;
     //   return;
     // }
-    // const dx = Math.abs(commonFriendOrigin.x - friendOrigin.x);
-    // const dy = Math.abs(commonFriendOrigin.y - friendOrigin.y);
+    // const dx = Math.abs(mutualOrigin.x - friendOrigin.x);
+    // const dy = Math.abs(mutualOrigin.y - friendOrigin.y);
     // const d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
     //
     // let degrees = MathUtils.radiantToDegress(Math.atan(dy / dx));
-    // if (commonFriendOrigin.y < friendOrigin.y) degrees *= -1;
-    // if (commonFriendOrigin.x < friendOrigin.x) degrees = 180 - degrees;
+    // if (mutualOrigin.y < friendOrigin.y) degrees *= -1;
+    // if (mutualOrigin.x < friendOrigin.x) degrees = 180 - degrees;
     //
     // node.style.transform = `rotate(${degrees}deg) scaleX(${d})`;
     // node.style.opacity = springValue;
   };
 
-  onUpdateCommonFriend = (node, origin, springValue) => {
+  onUpdateMutual = (node, origin, springValue) => {
     const {portraitSize} = this.props;
     const x = origin.x - portraitSize / 2;
     const y = origin.y - portraitSize / 2;
@@ -141,7 +141,7 @@ export default class CommonFriends extends Component {
   };
 
   applySpringToFriendOrigin = (targetOrigin, springValue, i) => {
-    // Only animate the common friends that will be visible initially
+    // Only animate the mutuals that will be visible initially
     if (i > 2) return targetOrigin;
 
     const {offsetWidth, offsetHeight} = this.props;
@@ -185,7 +185,7 @@ export default class CommonFriends extends Component {
   }
 
   render() {
-    const {friend, portraitSize, commonFriends, offsetHeight} = this.props;
+    const {friend, portraitSize, mutuals, offsetHeight} = this.props;
 
     return (
       <div
@@ -202,24 +202,22 @@ export default class CommonFriends extends Component {
         )}
 
         <div
-          className={cs.commonFriends}
-          ref={this.onCommonFriendsRef}
+          className={cs.mutuals}
+          ref={this.onMutualsRef}
           style={{height: offsetHeight}}
         >
-          {commonFriends.map(commonFriend => (
+          {mutuals.map(mutual => (
             <Person
-              key={commonFriend.id}
-              {...commonFriend}
-              className={cs.commonFriend}
+              key={mutual.id}
+              {...mutual}
+              className={cs.mutual}
               size={portraitSize}
             />
           ))}
         </div>
 
         <div ref={this.onTopLinesRef}>
-          {commonFriends.map(commonFriend => (
-            <div className={cs.line} key={commonFriend.id} />
-          ))}
+          {mutuals.map(mutual => <div className={cs.line} key={mutual.id} />)}
         </div>
       </div>
     );
