@@ -19,7 +19,8 @@
     "react": "^16.0.0",
     "react-dom": "^16.0.0",
     "react-scripts-cssmodules": "^1.0.142",
-    "rxjs": "5.5.2"
+    "rxjs": "5.5.2",
+    "wobble": "1.2.0"
   },
   "devDependencies": {
     "babel-eslint": "^7.2.3",

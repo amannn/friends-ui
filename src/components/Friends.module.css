@@ -1,5 +1,7 @@
 .friend {
   position: absolute;
+  top: 0;
+  left: 0;
   will-change: transform;
 }
 
@@ -12,6 +14,11 @@
   width: 1px;
   height: 230px;
   pointer-events: none;
+}
+
+.friend_hidden,
+.line_hidden {
+  display: none;
 }
 
 .line {

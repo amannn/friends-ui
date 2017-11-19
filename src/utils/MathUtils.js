@@ -10,10 +10,10 @@ export default {
   },
 
   interpolateRange({
-    inputStart,
-    inputEnd,
-    outputStart,
-    outputEnd,
+    inputStart = 0,
+    inputEnd = 1,
+    outputStart = 0,
+    outputEnd = 1,
     current,
     clamp = true
   }) {

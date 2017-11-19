@@ -21,5 +21,12 @@ export default {
     .map((_, i) => ({
       id: i,
       portrait: friendImages[i % friendImages.length]
+    })),
+
+  commonFriends: Array(50)
+    .fill(null)
+    .map((_, i) => ({
+      id: i,
+      portrait: friendImages[i % friendImages.length]
     }))
 };

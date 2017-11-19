@@ -7483,6 +7483,10 @@ window-size@^0.1.2:
   version "0.1.4"
   resolved "https://registry.yarnpkg.com/window-size/-/window-size-0.1.4.tgz#f8e1aa1ee5a53ec5bf151ffa09742a6ad7697876"
 
+wobble@1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/wobble/-/wobble-1.2.0.tgz#ed8cab9bcbd3f6617af40d18c51f43cff83bd1c6"
+
 wordwrap@0.0.2:
   version "0.0.2"
   resolved "https://registry.yarnpkg.com/wordwrap/-/wordwrap-0.0.2.tgz#b79669bb42ecb409f83d583cad52ca17eaa1643f"

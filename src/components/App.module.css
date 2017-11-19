@@ -6,6 +6,10 @@
   margin: auto;
 }
 
+.root_preventScrolling {
+  overflow-y: hidden;
+}
+
 .user {
   position: fixed;
 }

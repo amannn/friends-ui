@@ -1,14 +1,17 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
+import cx from 'classnames';
 import Friends from './Friends';
+import CommonFriends from './CommonFriends';
 import Person from './Person';
 import cs from './App.module.css';
 
 export default class App extends Component {
   static propTypes = {
-    user: PropTypes.object.isRequired,
+    commonFriends: PropTypes.array.isRequired,
     friends: PropTypes.array.isRequired,
-    portraitSize: PropTypes.number
+    portraitSize: PropTypes.number,
+    user: PropTypes.object.isRequired
   };
 
   static defaultProps = {
@@ -19,8 +22,8 @@ export default class App extends Component {
     innerHeight: undefined,
     innerWidth: undefined,
     offsetWidth: undefined,
-    userPosition: undefined,
-    scrollHeight: undefined
+    selectedFriend: undefined,
+    userPosition: undefined
   };
 
   componentDidMount() {
@@ -38,6 +41,9 @@ export default class App extends Component {
     this.rootNode = node;
   };
 
+  onSelectFriend = (index, origin) =>
+    this.setState({selectedFriend: {index, origin}});
+
   measure() {
     const {portraitSize} = this.props;
     const {offsetWidth} = this.rootNode;
@@ -54,13 +60,25 @@ export default class App extends Component {
   }
 
   render() {
-    const {friends, user, portraitSize} = this.props;
-    const {userPosition, innerHeight, innerWidth, offsetWidth} = this.state;
+    const {friends, commonFriends, user, portraitSize} = this.props;
+    const {
+      innerHeight,
+      innerWidth,
+      offsetWidth,
+      selectedFriend,
+      userPosition
+    } = this.state;
     const hasMeasured = userPosition !== undefined;
+    const selectedFriendIndex = selectedFriend
+      ? selectedFriend.index
+      : undefined;
+    const enhancedSelectedFriend = selectedFriend
+      ? {...friends[selectedFriend.index], ...selectedFriend}
+      : undefined;
 
     return (
       <div
-        className={cs.root}
+        className={cx(cs.root, {[cs.root_preventScrolling]: selectedFriend})}
         ref={this.onRootRef}
         style={{height: innerHeight}}
       >
@@ -70,8 +88,19 @@ export default class App extends Component {
             key="friends"
             offsetHeight={innerHeight}
             offsetWidth={offsetWidth}
+            onSelectFriend={this.onSelectFriend}
             portraitSize={portraitSize}
+            selectedFriendIndex={selectedFriendIndex}
             userPosition={userPosition}
+          />,
+
+          <CommonFriends
+            commonFriends={commonFriends}
+            friend={enhancedSelectedFriend}
+            key="commonFriends"
+            offsetHeight={innerHeight}
+            offsetWidth={offsetWidth}
+            portraitSize={portraitSize}
           />,
 
           <Person
