@@ -19,7 +19,7 @@ export default class App extends Component {
     innerHeight: undefined,
     innerWidth: undefined,
     offsetWidth: undefined,
-    userOrigin: undefined,
+    userPosition: undefined,
     scrollHeight: undefined
   };
 
@@ -43,9 +43,9 @@ export default class App extends Component {
     const {offsetWidth} = this.rootNode;
 
     this.setState({
-      userOrigin: {
-        left: offsetWidth / 2,
-        bottom: 40 + portraitSize / 2
+      userPosition: {
+        left: offsetWidth / 2 - portraitSize / 2,
+        bottom: 40
       },
       innerHeight: window.innerHeight,
       innerWidth: window.innerWidth,
@@ -55,8 +55,8 @@ export default class App extends Component {
 
   render() {
     const {friends, user, portraitSize} = this.props;
-    const {userOrigin, innerHeight, innerWidth, offsetWidth} = this.state;
-    const hasMeasured = userOrigin !== undefined;
+    const {userPosition, innerHeight, innerWidth, offsetWidth} = this.state;
+    const hasMeasured = userPosition !== undefined;
 
     return (
       <div
@@ -71,7 +71,7 @@ export default class App extends Component {
             offsetHeight={innerHeight}
             offsetWidth={offsetWidth}
             portraitSize={portraitSize}
-            userOrigin={userOrigin}
+            userPosition={userPosition}
           />,
 
           <Person
@@ -80,7 +80,7 @@ export default class App extends Component {
             key="user"
             size={portraitSize}
             style={{
-              bottom: userOrigin.bottom - portraitSize / 2,
+              bottom: userPosition.bottom,
               left: (innerWidth - portraitSize) / 2
             }}
           />

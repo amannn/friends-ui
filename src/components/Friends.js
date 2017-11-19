@@ -1,14 +1,14 @@
 import React, {Component} from 'react';
 import PropTypes from 'prop-types';
-import * as Animated from 'animated/lib/targets/react-dom';
-import Easing from 'animated/lib/Easing';
+import Rx from 'rxjs/Rx';
 import NumberUtils from '../utils/NumberUtils';
+import Easing from '../utils/Easing';
 import Person from './Person';
 import cs from './Friends.module.css';
 
 export default class Friends extends Component {
   static propTypes = {
-    userOrigin: PropTypes.object.isRequired,
+    userPosition: PropTypes.object.isRequired,
     friends: PropTypes.array.isRequired,
     offsetY: PropTypes.number,
     offsetWidth: PropTypes.number,
@@ -22,12 +22,6 @@ export default class Friends extends Component {
     offsetY: 40
   };
 
-  state = {
-    friendsOrigins: undefined,
-    scrollTop: new Animated.Value(0),
-    scrollHeight: undefined
-  };
-
   componentWillMount() {
     const {
       friends,
@@ -37,145 +31,138 @@ export default class Friends extends Component {
       portraitSize
     } = this.props;
 
-    const friendsOrigins = friends.map((friend, i) => {
-      let left =
+    this.friendsBaseOrigins = friends.map((friend, i) => {
+      let x =
         paddingSides +
         portraitSize / 2 +
         Math.random() * (offsetWidth / 2 - paddingSides * 2 - portraitSize);
-      if (i % 2 !== 0) left += offsetWidth / 2;
+      if (i % 2 !== 0) x += offsetWidth / 2;
 
-      return {left, top: (i + 1) * (portraitSize + offsetY)};
+      return {x, y: (i + 1) * (portraitSize + offsetY)};
     });
-
-    this.setState({friendsOrigins});
-
-    this.state.scrollTop.addListener(this.onUpdateLines);
   }
 
   componentDidMount() {
-    const {parentNode} = this.friendsNode;
-    const {scrollHeight} = parentNode;
-    this.setState({scrollHeight});
-    parentNode.scrollTop = scrollHeight;
+    const {offsetHeight, portraitSize, userPosition} = this.props;
+    const {parentNode} = this.rootNode;
 
-    const onFrame = () => {
-      this.state.scrollTop.setValue(parentNode.scrollTop);
-      requestAnimationFrame(onFrame);
-    };
-    requestAnimationFrame(onFrame);
+    const scrollTop$ = Rx.Observable
+      .interval(0, Rx.Scheduler.animationFrame)
+      .map(() => parentNode.scrollTop);
+
+    const userOrigin$ = scrollTop$.map(scrollTop => ({
+      x: userPosition.left + portraitSize / 2,
+      y: scrollTop + offsetHeight - userPosition.bottom - portraitSize / 2
+    }));
+
+    this.friendsBaseOrigins.forEach((friendBaseOrigin, i) => {
+      const friendOrigin$ = userOrigin$.map(userOrigin =>
+        this.applyRepulsion(friendBaseOrigin, userOrigin)
+      );
+
+      friendOrigin$
+        .combineLatest(userOrigin$)
+        .subscribe(args => this.onUpdateLine(this.lineNodes[i], ...args));
+
+      friendOrigin$
+        .combineLatest(userOrigin$)
+        .subscribe(args => this.onUpdateFriend(this.friendNodes[i], ...args));
+    });
+
+    // Wait until the first render got flushed to the DOM
+    setTimeout(() => {
+      parentNode.scrollTop = parentNode.scrollHeight;
+    }, 20);
   }
 
+  onRootRef = node => {
+    this.rootNode = node;
+  };
+
   onFriendsRef = node => {
-    this.friendsNode = node;
+    this.friendNodes = node.children;
   };
 
   onLinesRef = node => {
     this.lineNodes = node.children;
   };
 
-  onUpdateLines = ({value: scrollTop}) => {
-    const {userOrigin, portraitSize, offsetHeight} = this.props;
-    const {friendsOrigins} = this.state;
+  onUpdateFriend = (node, friendOrigin, userOrigin) => {
+    const {portraitSize} = this.props;
+    const {userPosition} = this.props;
 
-    const positionedUserOrigin = {
-      left: userOrigin.left,
-      top: scrollTop + offsetHeight - userOrigin.bottom
-    };
-
-    const visibleFriendsOrigins = friendsOrigins.map(friendOrigin => {
-      const top = friendOrigin.top - portraitSize / 2;
-      const isOutOfViewport = top < scrollTop || top > scrollTop + offsetHeight;
-      return isOutOfViewport ? undefined : friendOrigin;
+    node.style.opacity = NumberUtils.interpolateRange({
+      inputStart: userOrigin.y - portraitSize,
+      inputEnd: userOrigin.y + userPosition.bottom + portraitSize,
+      outputStart: 1,
+      outputEnd: 0,
+      current: friendOrigin.y
     });
 
-    visibleFriendsOrigins.forEach((friendOrigin, i) => {
-      const node = this.lineNodes[i];
-
-      if (!friendOrigin) {
-        node.style.opacity = 0;
-        return;
-      }
-
-      const dx = Math.abs(friendOrigin.left - positionedUserOrigin.left);
-      const dy = Math.abs(friendOrigin.top - positionedUserOrigin.top);
-      const d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
-
-      let degrees = NumberUtils.radiantToDegress(Math.atan(dy / dx));
-      if (friendOrigin.top < positionedUserOrigin.top) degrees *= -1;
-      if (friendOrigin.left < positionedUserOrigin.left) {
-        degrees = 180 - degrees;
-      }
-
-      node.style.transform = `rotate(${degrees}deg) scaleX(${d})`;
-      node.style.opacity = 1;
-    });
+    const x = friendOrigin.x - portraitSize / 2;
+    const y = friendOrigin.y - portraitSize / 2;
+    node.style.transform = `translate(${x}px, ${y}px)`;
   };
 
-  interpolateFriendOpacity(friendOrigin) {
-    const {userOrigin, offsetHeight, portraitSize} = this.props;
-    const {scrollTop, scrollHeight} = this.state;
-    if (!scrollHeight) return 0;
+  onUpdateLine = (node, friendOrigin, userOrigin) => {
+    const {offsetHeight, userPosition, portraitSize} = this.props;
 
-    return scrollTop.interpolate({
-      inputRange: [
-        friendOrigin.top - offsetHeight,
-        friendOrigin.top - offsetHeight + userOrigin.bottom + portraitSize / 2
-      ],
-      outputRange: [0, 1],
-      extrapolate: 'clamp'
-    });
-  }
+    const isOutOfViewport =
+      userOrigin.y - friendOrigin.y > offsetHeight - portraitSize / 2 ||
+      friendOrigin.y - userOrigin.y > userPosition.bottom + portraitSize;
 
-  interpolateFriendTransform(friendOrigin) {
-    const {userOrigin, offsetHeight, portraitSize} = this.props;
-    const {scrollTop, scrollHeight} = this.state;
-    if (!scrollHeight) return 0;
+    if (isOutOfViewport) {
+      node.style.opacity = 0;
+      return;
+    }
 
-    const minOriginD = portraitSize + 20;
-    const baseOriginsD = Math.abs(userOrigin.left - friendOrigin.left);
-    const isRight = friendOrigin.left > userOrigin.left;
-    const maxTranslation = minOriginD - baseOriginsD;
-    const userOriginTop = friendOrigin.top - offsetHeight + userOrigin.bottom;
+    const dx = Math.abs(friendOrigin.x - userOrigin.x);
+    const dy = Math.abs(friendOrigin.y - userOrigin.y);
+    const d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
 
-    // The friend is too far away from the user, so no translation is necessary.
-    if (maxTranslation <= 0) return [];
+    let degrees = NumberUtils.radiantToDegress(Math.atan(dy / dx));
+    if (friendOrigin.y < userOrigin.y) degrees *= -1;
+    if (friendOrigin.x < userOrigin.x) degrees = 180 - degrees;
 
-    return [
-      {
-        translateX: scrollTop.interpolate({
-          inputRange: [
-            userOriginTop - minOriginD,
-            userOriginTop,
-            userOriginTop + minOriginD
-          ],
-          outputRange: [0, isRight ? maxTranslation : -maxTranslation, 0],
-          easing: Easing.inOut(Easing.quad),
-          extrapolate: 'clamp'
-        })
-      }
-    ];
-  }
+    node.style.transform = `rotate(${degrees}deg) scaleX(${d})`;
+    node.style.opacity = 1;
+  };
+
+  applyRepulsion = (friendBaseOrigin, userOrigin) => {
+    const {portraitSize} = this.props;
+    const minD = portraitSize + 30;
+
+    const dx = Math.abs(friendBaseOrigin.x - userOrigin.x);
+    const dy = Math.abs(friendBaseOrigin.y - userOrigin.y);
+    const d = Math.sqrt(Math.pow(dx, 2) + Math.pow(dy, 2));
+    let repulsion = 0;
+
+    if (d < minD) {
+      const newX = Math.sqrt(Math.pow(minD, 2) - Math.pow(dy, 2));
+      repulsion = newX - dx;
+      repulsion = Easing.easeInQuad(repulsion / portraitSize) * portraitSize;
+      if (friendBaseOrigin.x < userOrigin.x) repulsion *= -1;
+    }
+
+    return {
+      y: friendBaseOrigin.y,
+      x: friendBaseOrigin.x + repulsion
+    };
+  };
 
   render() {
     const {friends, portraitSize} = this.props;
-    const {friendsOrigins} = this.state;
 
     return (
-      <div ref={this.onFriendsRef}>
-        <div>
-          {friends.map((friend, i) => (
-            <Animated.div
+      <div ref={this.onRootRef}>
+        <div ref={this.onFriendsRef}>
+          {friends.map(friend => (
+            <Person
               className={cs.friend}
               key={friend.id}
-              style={{
-                opacity: this.interpolateFriendOpacity(friendsOrigins[i]),
-                transform: this.interpolateFriendTransform(friendsOrigins[i]),
-                left: friendsOrigins[i].left - portraitSize / 2,
-                top: friendsOrigins[i].top - portraitSize / 2
-              }}
-            >
-              <Person size={portraitSize} {...friend} />
-            </Animated.div>
+              size={portraitSize}
+              {...friend}
+            />
           ))}
         </div>
 
