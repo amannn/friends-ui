@@ -12,6 +12,24 @@
   left: 0;
 }
 
+.close {
+  position: fixed;
+  top: 50px;
+  right: 50px;
+  width: 50px;
+  height: 50px;
+  border: none;
+  appearance: none;
+  background: url("../assets/close.svg") no-repeat center;
+  background-size: 20px;
+  z-index: 1;
+  opacity: 0;
+}
+
+.close:focus {
+  outline: none;
+}
+
 .mutuals {
   position: fixed;
   top: 0;

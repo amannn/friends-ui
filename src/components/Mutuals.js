@@ -37,11 +37,29 @@ export default class Mutuals extends Component {
       offsetHeight,
       offsetX
     } = this.props;
-    const spring = new Spring({
-      fromValue: 0,
-      toValue: 1
-    });
+
     const {scrollTop} = this.rootNode.parentNode;
+    const spring = new Spring({fromValue: 0, toValue: 1});
+
+    this.closeSubject = new Rx.Subject();
+
+    const closeClick$ = this.closeSubject.startWith(false);
+    closeClick$.subscribe(hasClosed => {
+      spring.updateConfig({toValue: hasClosed ? 0 : 1});
+      spring.start();
+    });
+
+    const spring$ = createSpringObservable(spring);
+
+    const friendOrigin$ = spring$.map(springValue =>
+      this.mapSpringToFriendOrigin(springValue, scrollTop)
+    );
+
+    friendOrigin$
+      .combineLatest(closeClick$)
+      .subscribe(([origin, hasClosed]) =>
+        this.onUpdateFriend(this.friendNode, origin, hasClosed)
+      );
 
     const mutualsBaseOrigins = mutuals.map((friend, i) => {
       const y =
@@ -51,16 +69,6 @@ export default class Mutuals extends Component {
       const x = i * (portraitSize + offsetX) + offsetX + portraitSize / 2;
       return {x, y};
     });
-
-    const spring$ = createSpringObservable(spring);
-
-    const friendOrigin$ = spring$.map(springValue =>
-      this.mapSpringToFriendOrigin(springValue, scrollTop)
-    );
-
-    friendOrigin$.subscribe(origin =>
-      this.onUpdateFriend(this.friendNode, origin)
-    );
 
     mutualsBaseOrigins.forEach((baseOrigin, i) => {
       const node = this.mutualsNodes[i];
@@ -75,6 +83,7 @@ export default class Mutuals extends Component {
         .withLatestFrom(spring$)
         .subscribe(([[mutualOrigin, friendOrigin], springValue]) => {
           this.onUpdateMutual(node, mutualOrigin, springValue);
+          this.onUpdateClose(this.closeNode, springValue);
           // this.onUpdateTopLine(
           //   this.topLineNodes[i],
           //   mutualOrigin,
@@ -91,6 +100,10 @@ export default class Mutuals extends Component {
     this.rootNode = node;
   };
 
+  onCloseRef = node => {
+    this.closeNode = node;
+  };
+
   onFriendRef = node => {
     this.friendNode = node;
   };
@@ -101,6 +114,19 @@ export default class Mutuals extends Component {
 
   onMutualsRef = node => {
     this.mutualsNodes = node.children;
+  };
+
+  onCloseClick = () => {
+    this.closeSubject.next(true);
+  };
+
+  onUpdateClose = (node, springValue) => {
+    node.style.opacity = MathUtils.interpolateRange({
+      outputEnd: 0.75,
+      clamp: false,
+      current: springValue
+    });
+    node.style.transform = `scale(${springValue})`;
   };
 
   onUpdateTopLine = (node, mutualOrigin, friendOrigin, springValue) => {
@@ -129,15 +155,25 @@ export default class Mutuals extends Component {
     const {portraitSize} = this.props;
     const x = origin.x - portraitSize / 2;
     const y = origin.y - portraitSize / 2;
-    node.style.transform = `translate(${x}px, ${y}px) scale(0.85)`;
+    const scale = MathUtils.interpolateRange({
+      outputEnd: 0.85,
+      current: springValue,
+      clamp: false
+    });
+    node.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     node.style.opacity = springValue;
   };
 
-  onUpdateFriend = (node, origin) => {
+  onUpdateFriend = (node, origin, hasClosed) => {
     const {portraitSize} = this.props;
-    const x = origin.x - portraitSize / 2;
-    const y = origin.y - portraitSize / 2;
-    node.style.transform = `translate(${x}px, ${y}px)`;
+    if (hasClosed) {
+      node.style.display = 'none';
+    } else {
+      const x = origin.x - portraitSize / 2;
+      const y = origin.y - portraitSize / 2;
+      node.style.transform = `translate(${x}px, ${y}px)`;
+      node.style.display = 'block';
+    }
   };
 
   applySpringToFriendOrigin = (targetOrigin, springValue, i) => {
@@ -200,6 +236,12 @@ export default class Mutuals extends Component {
             size={portraitSize}
           />
         )}
+
+        <button
+          className={cs.close}
+          onClick={this.onCloseClick}
+          ref={this.onCloseRef}
+        />
 
         <div
           className={cs.mutuals}
