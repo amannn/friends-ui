@@ -4,4 +4,6 @@ import App from './components/App';
 import data from './data';
 import './index.css';
 
-ReactDOM.render(<App {...data} />, document.getElementById('root'));
+const element = <App {...data} />;
+const node = document.getElementById('root');
+ReactDOM.createRoot(node).render(element);

@@ -5,7 +5,7 @@
   will-change: transform;
 }
 
-/* Some space beelow the last friend so it's placed above the me. */
+/* Some space below the last friend so it's placed above the user. */
 .friend:last-child::after {
   content: "";
   top: 0;
@@ -14,21 +14,4 @@
   width: 1px;
   height: 230px;
   pointer-events: none;
-}
-
-.friend_hidden,
-.line_hidden {
-  display: none;
-}
-
-.line {
-  position: fixed;
-  width: 1px;
-  height: 1px;
-  background-color: rgba(255, 255, 255, 0.075);
-  will-change: transform;
-  transform-origin: top left;
-  left: 50%;
-  bottom: 77px;
-  z-index: -1;
 }

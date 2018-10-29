@@ -16,14 +16,7 @@ export default {
     portrait: require('./faces/image-1.png')
   },
 
-  friends: Array(50)
-    .fill(null)
-    .map((_, i) => ({
-      id: i,
-      portrait: friendImages[i % friendImages.length]
-    })),
-
-  mutuals: Array(50)
+  friends: Array(30)
     .fill(null)
     .map((_, i) => ({
       id: i,
