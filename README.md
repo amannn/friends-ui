@@ -1,6 +1,6 @@
 # friends-ui
 
-[!<img src="demo.png" width=400/>](demo.mp4)
+[<img src="demo.png" width=400/>](demo.mp4)
 
 [Try it live](https://amannn.github.io/friends-ui/)
 
