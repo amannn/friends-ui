@@ -102,7 +102,6 @@ function Friends(props) {
               userPosition={userPosition}
             />
             <Line
-              debug={i === 0}
               hideOffsetBottom={offsetHeight - portraitSize / 2}
               hideOffsetTop={userPosition.bottom + portraitSize}
               sourceOrigin$={userOrigin$}
