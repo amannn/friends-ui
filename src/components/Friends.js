@@ -78,7 +78,7 @@ function Friends(props) {
   } = props;
   const [streams, setStreams] = useState(undefined);
 
-  useEffect(() => setStreams(createStreams(props)), [...Object.values(props)]);
+  useEffect(() => setStreams(createStreams(props)), Object.values(props));
   useScrollToBottom(scrollerNode, [streams]);
 
   if (!streams) return null;
