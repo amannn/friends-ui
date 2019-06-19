@@ -1,15 +1,15 @@
 self.__precacheManifest = [
   {
-    "revision": "9483b9d876b8f89c3b2c1f62be671d67",
-    "url": "/friends-ui/static/media/image-6.9483b9d8.png"
+    "revision": "e6847ebb2fe9b72da19b",
+    "url": "/friends-ui/static/css/main.915298a1.chunk.css"
   },
   {
-    "revision": "f8613be79a8f6d335e29",
-    "url": "/friends-ui/static/css/main.2058d541.chunk.css"
+    "revision": "e6847ebb2fe9b72da19b",
+    "url": "/friends-ui/static/js/main.e6847ebb.chunk.js"
   },
   {
-    "revision": "960a663bf650d3e0dbfa",
-    "url": "/friends-ui/static/js/1.960a663b.chunk.js"
+    "revision": "6de447c76569bca6d8c3",
+    "url": "/friends-ui/static/js/1.6de447c7.chunk.js"
   },
   {
     "revision": "08fbd405ac437736ca56",
@@ -32,8 +32,8 @@ self.__precacheManifest = [
     "url": "/friends-ui/static/media/image-5.f795e502.png"
   },
   {
-    "revision": "f8613be79a8f6d335e29",
-    "url": "/friends-ui/static/js/main.f8613be7.chunk.js"
+    "revision": "9483b9d876b8f89c3b2c1f62be671d67",
+    "url": "/friends-ui/static/media/image-6.9483b9d8.png"
   },
   {
     "revision": "58d77a0a4e3a8872ad94df5dc60c0062",
@@ -60,7 +60,7 @@ self.__precacheManifest = [
     "url": "/friends-ui/static/media/image-1.ab1b22e1.png"
   },
   {
-    "revision": "1942c6d62d686421896340fc2d8da3fe",
+    "revision": "2786ed11e82eb5673f268d19c13fa41a",
     "url": "/friends-ui/index.html"
   }
 ];
