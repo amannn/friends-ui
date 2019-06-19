@@ -60,7 +60,7 @@ const UserFriend = ({
 
       return () => subscriber.unsubscribe();
     },
-    [friendOrigin$, nodeRef.current, portraitSize, userOrigin$, userPosition]
+    [friendOrigin$, portraitSize, userOrigin$, userPosition]
   );
 
   return (

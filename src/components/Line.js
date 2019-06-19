@@ -51,13 +51,7 @@ const Line = ({
 
       return () => subscriber.unsubscribe();
     },
-    [
-      hideOffsetBottom,
-      hideOffsetTop,
-      targetOrigin$,
-      sourceOrigin$,
-      nodeRef.current
-    ]
+    [hideOffsetBottom, hideOffsetTop, sourceOrigin$, targetOrigin$]
   );
 
   return <div className={cs.root} ref={nodeRef} style={style} />;

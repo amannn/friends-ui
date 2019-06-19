@@ -8,11 +8,11 @@ const getCurrentSize = () => ({
 export default function useWindowSize() {
   const [size, setSize] = useState(getCurrentSize());
 
-  function onResize() {
-    setSize(getCurrentSize());
-  }
-
   useEffect(() => {
+    function onResize() {
+      setSize(getCurrentSize());
+    }
+
     window.addEventListener('resize', onResize);
     return () => window.removeEventListener('resize', onResize);
   }, []);

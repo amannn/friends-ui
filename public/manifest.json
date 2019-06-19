@@ -1,6 +1,6 @@
 {
-  "short_name": "friends-ui",
-  "name": "friends-ui",
+  "short_name": "Friends UI",
+  "name": "Friends UI",
   "icons": [
     {
       "src": "favicon.ico",
@@ -8,8 +8,8 @@
       "type": "image/x-icon"
     }
   ],
-  "start_url": "./index.html",
-  "display": "standalone",
+  "start_url": ".",
+  "display": "fullscreen",
   "theme_color": "#332E41",
   "background_color": "#ffffff"
 }

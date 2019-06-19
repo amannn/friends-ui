@@ -78,8 +78,8 @@ function Friends(props) {
   } = props;
   const [streams, setStreams] = useState(undefined);
 
-  useEffect(() => setStreams(createStreams(props)), Object.values(props));
-  useScrollToBottom(scrollerNode, [streams]);
+  useEffect(() => setStreams(createStreams(props)), [props]);
+  useScrollToBottom(scrollerNode);
 
   if (!streams) return null;
   const {userOrigin$, friendOrigins$} = streams;

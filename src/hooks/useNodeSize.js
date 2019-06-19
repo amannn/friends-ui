@@ -8,12 +8,12 @@ const getCurrentSize = node => ({
 export default function useNodeSize(nodeRef) {
   const [size, setSize] = useState(getCurrentSize(nodeRef.current));
 
-  function onResize() {
-    setSize(getCurrentSize(nodeRef.current));
-  }
-
   useLayoutEffect(
     () => {
+      function onResize() {
+        setSize(getCurrentSize(nodeRef.current));
+      }
+
       onResize();
 
       window.addEventListener('resize', onResize);
