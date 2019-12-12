@@ -32,29 +32,26 @@ const Line = ({
 }) => {
   const nodeRef = useRef(null);
 
-  useEffect(
-    () => {
-      const subscriber = targetOrigin$
-        .withLatestFrom(sourceOrigin$)
-        .subscribe(([targetOrigin, sourceOrigin]) => {
-          const node = nodeRef.current;
+  useEffect(() => {
+    const subscriber = targetOrigin$
+      .withLatestFrom(sourceOrigin$)
+      .subscribe(([targetOrigin, sourceOrigin]) => {
+        const node = nodeRef.current;
 
-          const isOutOfViewport =
-            sourceOrigin.y - targetOrigin.y > hideOffsetBottom ||
-            targetOrigin.y - sourceOrigin.y > hideOffsetTop;
+        const isOutOfViewport =
+          sourceOrigin.y - targetOrigin.y > hideOffsetBottom ||
+          targetOrigin.y - sourceOrigin.y > hideOffsetTop;
 
-          node.style.opacity = isOutOfViewport ? 0 : 1;
-          if (!isOutOfViewport) {
-            node.style.transform = getTransform({sourceOrigin, targetOrigin});
-          }
-        });
+        node.style.opacity = isOutOfViewport ? 0 : 1;
+        if (!isOutOfViewport) {
+          node.style.transform = getTransform({sourceOrigin, targetOrigin});
+        }
+      });
 
-      return () => subscriber.unsubscribe();
-    },
-    [hideOffsetBottom, hideOffsetTop, sourceOrigin$, targetOrigin$]
-  );
+    return () => subscriber.unsubscribe();
+  }, [hideOffsetBottom, hideOffsetTop, sourceOrigin$, targetOrigin$]);
 
-  return <div className={cs.root} ref={nodeRef} style={style} />;
+  return <div ref={nodeRef} className={cs.root} style={style} />;
 };
 
 Line.propTypes = propTypes;

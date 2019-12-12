@@ -48,16 +48,17 @@ function createStreams({
 
   // Reading `scrollTop` every animation frame is more accurate than listening
   // for scroll events, as those are only dispatched on a "best effort" basis.
-  const userOrigin$ = Rx.Observable
-    .interval(0, Rx.Scheduler.animationFrame)
-    .map(() => ({
-      x: userPosition.left + portraitSize / 2,
-      y:
-        scrollerNode.scrollTop +
-        offsetHeight -
-        userPosition.bottom -
-        portraitSize / 2
-    }));
+  const userOrigin$ = Rx.Observable.interval(
+    0,
+    Rx.Scheduler.animationFrame
+  ).map(() => ({
+    x: userPosition.left + portraitSize / 2,
+    y:
+      scrollerNode.scrollTop +
+      offsetHeight -
+      userPosition.bottom -
+      portraitSize / 2
+  }));
 
   const friendOrigins$ = userOrigin$.map(userOrigin =>
     initialFriendOrigins.map(friendBaseOrigin =>

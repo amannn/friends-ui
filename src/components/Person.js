@@ -6,14 +6,14 @@ import cs from './Person.module.css';
 const propTypes = {
   className: PropTypes.string,
   portrait: PropTypes.string.isRequired,
-  style: PropTypes.object,
-  size: PropTypes.number
+  size: PropTypes.number,
+  style: PropTypes.object
 };
 
-const Person = forwardRef(({className, portrait, style, size}, ref) => (
+const Person = ({className, portrait, style, size}, ref) => (
   <div
-    className={cx(cs.root, className)}
     ref={ref}
+    className={cx(cs.root, className)}
     style={{
       ...style,
       width: size,
@@ -21,7 +21,8 @@ const Person = forwardRef(({className, portrait, style, size}, ref) => (
       backgroundImage: `url(${portrait})`
     }}
   />
-));
+);
 
-Person.propTypes = propTypes;
-export default Person;
+const Component = forwardRef(Person);
+Component.propTypes = propTypes;
+export default Component;

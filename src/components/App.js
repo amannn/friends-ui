@@ -34,8 +34,8 @@ function App({friends, portraitSize, user, userBottomMargin}) {
 
   return (
     <div
-      className={cs.root}
       ref={rootRef}
+      className={cs.root}
       style={{height: windowSize.innerHeight}}
     >
       {hasLayout && (

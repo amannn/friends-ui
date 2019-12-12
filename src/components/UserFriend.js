@@ -38,36 +38,33 @@ const UserFriend = ({
 }) => {
   const nodeRef = useRef(null);
 
-  useEffect(
-    () => {
-      const subscriber = friendOrigin$
-        .withLatestFrom(userOrigin$)
-        .subscribe(([friendOrigin, userOrigin]) => {
-          const node = nodeRef.current;
+  useEffect(() => {
+    const subscriber = friendOrigin$
+      .withLatestFrom(userOrigin$)
+      .subscribe(([friendOrigin, userOrigin]) => {
+        const node = nodeRef.current;
 
-          node.style.transform = getTransform({
-            friendOrigin,
-            portraitSize
-          });
-
-          node.style.opacity = getOpacity({
-            friendOrigin,
-            portraitSize,
-            userOrigin,
-            userPosition
-          });
+        node.style.transform = getTransform({
+          friendOrigin,
+          portraitSize
         });
 
-      return () => subscriber.unsubscribe();
-    },
-    [friendOrigin$, portraitSize, userOrigin$, userPosition]
-  );
+        node.style.opacity = getOpacity({
+          friendOrigin,
+          portraitSize,
+          userOrigin,
+          userPosition
+        });
+      });
+
+    return () => subscriber.unsubscribe();
+  }, [friendOrigin$, portraitSize, userOrigin$, userPosition]);
 
   return (
     <Person
+      ref={nodeRef}
       className={className}
       portrait={friend.portrait}
-      ref={nodeRef}
       size={portraitSize}
     />
   );
